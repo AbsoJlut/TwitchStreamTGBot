@@ -10,7 +10,7 @@ from twitchAPI.twitch import Twitch
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.error import BadRequest
 
-# Настройка логирования
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -21,13 +21,13 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Установка русской локали для форматирования текста
+
 try:
     locale.setlocale(locale.LC_TIME, 'ru_RU.UTF-8')
 except locale.Error:
     logger.warning("Локаль ru_RU.UTF-8 не найдена, текст будет на английском")
 
-# Функция для экранирования символов MarkdownV2
+
 def escape_markdown_v2(text):
     """Экранирует специальные символы для Telegram MarkdownV2."""
     if not isinstance(text, str):
@@ -37,7 +37,7 @@ def escape_markdown_v2(text):
         text = text.replace(char, f'\\{char}')
     return text
 
-# Функция для форматирования продолжительности
+
 def format_duration(seconds, always_show_hours=False):
     """Форматирует продолжительность в 'X ч Y мин' или 'Y мин'."""
     minutes = seconds // 60
@@ -47,7 +47,7 @@ def format_duration(seconds, always_show_hours=False):
         return f"{hours} ч {remaining_minutes} мин"
     return f"{minutes} мин"
 
-# Загрузка конфигурации
+
 try:
     with open('config.json') as f:
         config = json.load(f)
@@ -69,9 +69,8 @@ TWITCH_CLIENT_SECRET = config['TWITCH_CLIENT_SECRET']
 TELEGRAM_TOKEN = config['TELEGRAM_TOKEN']
 CHANNEL_ID = config['CHANNEL_ID']
 STREAMER = config['STREAMER']
-DISPLAY_NAME = config.get('DISPLAY_NAME', STREAMER)  # Псевдоним для отображения
-ALWAYS_SHOW_HOURS = config.get('ALWAYS_SHOW_HOURS', False)  # Всегда показывать часы
-SOCIAL_LINKS = config.get('SOCIAL_LINKS', {})  # Соцсети
+ALWAYS_SHOW_HOURS = config.get('ALWAYS_SHOW_HOURS', False)  
+SOCIAL_LINKS = config.get('SOCIAL_LINKS', {})  
 START_TIME = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 # Глобальные переменные
@@ -108,23 +107,23 @@ async def get_stream_info(twitch):
 async def send_or_update_message(bot, stream_info, is_ended=False):
     global message_id, last_message_text, last_stream_data
     try:
-        # Рассчитываем продолжительность стрима
+        
         now = datetime.now(timezone.utc)
         duration_seconds = int((now - stream_info['started_at']).total_seconds())
         duration_minutes = duration_seconds // 60
 
-        # Кэшируем данные стрима для сравнения
+        
         current_stream_data = {
             'title': stream_info['title'],
             'game_name': stream_info['game_name'],
             'viewer_count': stream_info['viewer_count'],
             'thumbnail_url': stream_info['thumbnail_url'],
-            'started_at': stream_info['started_at'],  # Сохраняем started_at
-            'duration_minutes': duration_minutes  # Для обновления продолжительности
+            'started_at': stream_info['started_at'],  
+            'duration_minutes': duration_minutes  
         }
         
         if not is_ended:
-            # Проверяем, нужно ли обновить данные
+            
             update_needed = last_stream_data is None or current_stream_data != last_stream_data
             if not update_needed:
                 logger.debug(f"Данные для {STREAMER} не изменились, пропускаем обновление")
@@ -133,7 +132,7 @@ async def send_or_update_message(bot, stream_info, is_ended=False):
                 changes = {k: v for k, v in current_stream_data.items() if last_stream_data.get(k) != v}
                 logger.info(f"Обнаружены изменения для {STREAMER}: {changes}")
 
-        # Формируем текст сообщения
+        
         if is_ended:
             message_text = (
                 f"*{escape_markdown_v2(DISPLAY_NAME)}*\n"
@@ -146,7 +145,7 @@ async def send_or_update_message(bot, stream_info, is_ended=False):
                 message_text += f"[{escape_markdown_v2(name.capitalize())}]({url})\n"
             message_text += f"[Twitch](https://www.twitch.tv/{STREAMER})\n\n"
             message_text += f"*Спасибо за просмотр стрима\\!*"
-            reply_markup = None  # Убираем кнопку
+            reply_markup = None  
         else:
             message_text = (
                 f"*{escape_markdown_v2(DISPLAY_NAME)}*\n"
@@ -170,11 +169,11 @@ async def send_or_update_message(bot, stream_info, is_ended=False):
 
         logger.debug(f"Отправляемый текст сообщения: {message_text}")
 
-        # Повторные попытки отправки
+        
         for attempt in range(3):
             try:
                 if message_id is None:
-                    # Отправляем новое сообщение с фото
+                    
                     message = await bot.send_photo(
                         chat_id=CHANNEL_ID,
                         photo=stream_info['thumbnail_url'],
@@ -186,7 +185,7 @@ async def send_or_update_message(bot, stream_info, is_ended=False):
                     logger.info(f"Создано новое сообщение для {STREAMER}: message_id={message_id}")
                     break
                 else:
-                    # Обновляем существующее сообщение
+                    
                     await bot.edit_message_media(
                         chat_id=CHANNEL_ID,
                         message_id=message_id,
@@ -205,7 +204,7 @@ async def send_or_update_message(bot, stream_info, is_ended=False):
                     logger.debug(f"Сообщение для {STREAMER} не изменилось, пропускаем обновление")
                     return
                 if attempt == 2:
-                    # Последняя попытка: отправляем без Markdown
+                    
                     unescaped_text = message_text.replace('\\', '')
                     if message_id is None:
                         message = await bot.send_photo(
@@ -232,7 +231,7 @@ async def send_or_update_message(bot, stream_info, is_ended=False):
                 logger.error(f"Попытка {attempt + 1}: Ошибка при отправке/обновлении: {e}", exc_info=True)
                 if attempt == 2:
                     raise
-                await asyncio.sleep(2)  # Задержка перед повторной попыткой
+                await asyncio.sleep(2)  
 
         last_message_text = message_text
         if not is_ended:
@@ -271,7 +270,7 @@ async def check_stream():
             elif not is_streaming_now and is_streaming:
                 is_streaming = False
                 if message_id is not None and last_stream_data is not None:
-                    # Проверяем наличие всех необходимых ключей
+                    
                     required_keys = {'title', 'game_name', 'thumbnail_url', 'started_at', 'viewer_count'}
                     if all(key in last_stream_data for key in required_keys):
                         last_stream_info = {
@@ -296,7 +295,7 @@ async def check_stream():
 
         except Exception as e:
             logger.error(f"Ошибка в check_stream: {e}", exc_info=True)
-            twitch = None  # Сбрасываем клиент для повторной инициализации
+            twitch = None  
 
         logger.debug("Ожидание следующей проверки")
         await asyncio.sleep(60)
