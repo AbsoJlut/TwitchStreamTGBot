@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  tg_bot:
+    build: .
+    container_name: tgbot_tg_bot_1
+    volumes:
+      - ./log.txt:/app/log.txt
+      - ./error.txt:/app/error.txt
+      - ./config.json:/app/config.json
+    networks:
+      - tgbot-network
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  tgbot-network:
+    driver: bridge

@@ -1,0 +1,12 @@
+{
+    "TWITCH_CLIENT_ID": "8c2k39e54dwi8y9nor47f8cp8ywcz2",
+    "TWITCH_CLIENT_SECRET": "m5x514a5izcd8x33xerlmd619okmbs",
+    "TELEGRAM_TOKEN": "8157333545:AAFNi6TKfaHiEHS0G1xcy--7bIBFvn4Ik6o",
+    "CHANNEL_ID": "@absojlut",
+    "STREAMER": "AbsoJlut",
+    "DISPLAY_NAME": "Привяу! Котя запустила стрим:",
+    "SOCIAL_LINKS": {
+        "Boosty": "https://boosty.to/kotya_lisichkina",
+        "Discord": "https://discord.com/invite/VFQVwp62Xg"
+    }
+}
