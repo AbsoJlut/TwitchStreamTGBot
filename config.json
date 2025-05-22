@@ -1,0 +1,12 @@
+{
+  "TWITCH_CLIENT_ID": "your_twitch_client_id",
+  "TWITCH_CLIENT_SECRET": "your_twitch_client_secret",
+  "TELEGRAM_TOKEN": "your_telegram_bot_token",
+  "CHANNEL_ID": "@YourChannelOrID",
+  "STREAMER": "streamer_username",
+  "ALWAYS_SHOW_HOURS": true,
+  "SOCIAL_LINKS": {
+    "Boosty": "link",
+    "Discord": "link"
+  }
+}
