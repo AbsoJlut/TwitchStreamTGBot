@@ -465,7 +465,6 @@ async def fun_alias_router(update: Update, context: ContextTypes.DEFAULT_TYPE) -
 
 # ----------------- регистрация/запуск -----------------
 def _register_fun_handlers(app: Application) -> None:
-    # Латинские «официальные» команды (подсветка и автодополнение в Telegram)
     app.add_handler(CommandHandler("roll",         cmd_roll))
     # app.add_handler(CommandHandler("roll_battle",  cmd_roll_battle))
     # app.add_handler(CallbackQueryHandler(cb_duel_accept, pattern="^duel_accept$"))
@@ -522,3 +521,4 @@ async def start_fun_dlc(app: Optional[Application] = None) -> Application:
 
         _register_fun_handlers(app)
         return app
+
