@@ -1,8 +1,8 @@
 import json
 import logging
 import random
-logging.getLogger("httpx").setLevel(logging.WARNING)             # HTTP‑клиент PTB 21
-logging.getLogger("telegram.request").setLevel(logging.WARNING)  # слой запросов PTB
+logging.getLogger("httpx").setLevel(logging.WARNING)           
+logging.getLogger("telegram.request").setLevel(logging.WARNING) 
 from typing import List, Optional, Dict
 
 from telegram import (
@@ -58,14 +58,6 @@ def _farewell_text(
     context: ContextTypes.DEFAULT_TYPE,
     scope: str = "global"
 ) -> str:
-    """
-    Генерирует текст прощания без повторов подряд.
-    Работает по принципу shuffle-bag:
-      • 3 варианта перемешиваются;
-      • выдаются по одному;
-      • когда кончаются — мешок пересоздаётся.
-    scope — ключ пространства (например chat:ID), чтобы у каждого чата был свой цикл.
-    """
 
     # Хранение состояний (мешков) в bot_data
     bag_store = context.application.bot_data.setdefault("FAREWELL_BAGS", {})
@@ -101,8 +93,8 @@ def _normalize_lines(v) -> str:
         text = "\n".join(map(str, v))
     else:
         text = str(v)
-    text = text.replace("\r\n", "\n").replace("\r", "\n")  # Windows -> \n
-    text = text.replace("\\n", "\n")                       # литералы "\n" -> перенос
+    text = text.replace("\r\n", "\n").replace("\r", "\n")  
+    text = text.replace("\\n", "\n")                       
     return text
 
 # ---------- клавиатуры ----------
@@ -526,3 +518,4 @@ async def start_group_dlc() -> Application | None:
     )
     log.info(f"DLC запущен для группы {group_id}")
     return app
+
