@@ -132,12 +132,14 @@ docker compose up -d
 ```
 twitch-stream-bot/
 ├── twitch_stream_bot.py    # Основной скрипт бота
+├── tg_fun_dlc.py           # DLC дополнительные развлекательные команды для отдельной группы (чат)
+├── tg_group_dlc.py         # DLC уведомления о входе/выходе из отдельной группы (чат)
 ├── config.json             # Конфигурация (токены, настройки)
 ├── docker-compose.yml      # Настройки Docker Compose
 ├── Dockerfile              # Описание Docker-образа
 ├── requirements.txt        # Зависимости Python
-├── log.txt                # Логи работы бота
-└── README.md              # Документация
+├── log.txt                 # Логи работы бота
+└── README.md               # Документация
 ```
 
 ---
