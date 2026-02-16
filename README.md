@@ -71,7 +71,7 @@ cd TwitchStreamTGBot
     "Twitch": "link",
     "Telegram": "link",
     "TikTok": "link",
-	  "YouTube": "link"
+    "YouTube": "link"
   },
   "ROLL_LUCKY_USERS": [], #ID пользователя который будет всегда выйгрывать в команде /roll (можно несколько через запятую)
   "ROLL_UNLUCKY_USERS": [], #ID пользователя который будет всегда проигрывать в команде /roll (можно несколько через запятую)
