@@ -1,12 +1,46 @@
 {
-  "TWITCH_CLIENT_ID": "your_twitch_client_id",
-  "TWITCH_CLIENT_SECRET": "your_twitch_client_secret",
-  "TELEGRAM_TOKEN": "your_telegram_bot_token",
-  "CHANNEL_ID": "@YourChannelOrID",
-  "STREAMER": "streamer_username",
-  "ALWAYS_SHOW_HOURS": true,
-  "SOCIAL_LINKS": {
+  "TWITCH_CLIENT_ID": "your_twitch_client_id", #Твич ID приложения с Twitch Developer 
+  "TWITCH_CLIENT_SECRET": "your_twitch_client_secret", #Секретный токен приложения с Twitch Developer 
+  "TELEGRAM_TOKEN": "your_telegram_bot_token", #Токен бота в телеграмме, создать можно на @BotFather
+  "DLC_GROUP_ID": -1000000000000, #Числовой ID группы где будут работать развлекательные команды и оповещения о вступлении в группу
+  "CHANNEL_ID": "@YourChannelOrID", #ID группы куда будут приходить оповещения о начале трансляции
+  "STREAMER": "streamer_username", #Ник стримера с твича оповещения которого нужны
+  "ALWAYS_SHOW_HOURS": false, #Сокращать часы в таймере уведомления или писать полностью
+  "DELETE_STREAM_MESSAGE_AFTER_END": false, #Удалять ли после конца стрима пост оповещения
+  "DELETE_STREAM_MESSAGE_DELAY_SECONDS": 3600, #Через сколько будет удаляться пост после конца стрима в секундах (только если DELETE_STREAM_MESSAGE_AFTER_END: true)
+  "IRL_IMAGE_URL": "https://example.ru/logoIRL.jpg", #Картинка в оповещении вместо скринов со стрима (Только в категории указанной в параметре IRL_CATEGORIES)
+  "IRL_CATEGORIES": ["IRL"],
+  "SOCIAL_LINKS": { #Ссылки которые будут появляться в посте оповещения после конца стрима (можно добавлять свои и менять названия)
     "Boosty": "link",
-    "Discord": "link"
-  }
+    "Discord": "link",
+    "TikTok": "link",
+    "YouTube": "link"
+  },
+  "STREAM_LINKS": { #Интерактивные кнопки которые будут появляться в посте оповещения после начала стрима (можно добавлять свои и менять названия)
+	"DonationAlerts": "link",
+	"MemeAlerts": "link",
+	"СБП": "link",
+	"Boosty": "link"
+  },
+  "LINKS_COMMAND": { #Ссылки которые будут появляться в самом боте командой /links или по нажатию интерактивной кнопки (можно добавлять свои и менять названия)
+    "Boosty": "link",
+    "Discord": "link",
+    "Twitch": "link",
+    "Telegram": "link",
+    "TikTok": "link",
+	  "YouTube": "link"
+  },
+  "ROLL_LUCKY_USERS": [], #ID пользователя который будет всегда выйгрывать в команде /roll (можно несколько через запятую)
+  "ROLL_UNLUCKY_USERS": [], #ID пользователя который будет всегда проигрывать в команде /roll (можно несколько через запятую)
+  "LOVE_SPECIAL_PAIRS": [], #ID пользователей которые будут всегда получать максимальный результат в команде /love (можно несколько через запятую)
+  "CANCEL_PROTECTED_USERS": [], #ID пользователей которые будут защищены от команды /отмена (можно несколько через запятую) (рп команда)
+  "DLC_RULES": [ #Правила которые будут появляется в боте и по команде /rules
+  "В ЧАТЕ ЗАПРЕЩЕНО:",
+  "",
+  "• Сильно материться;",
+  "• Обсуждать политику, религию и пр.;",
+  "• Оскорблять кого-либо, спойлерить что-либо;",
+  "• Обсуждать личную жизнь кого-либо;",
+  "• Сексуализировать что-либо;"
+]
 }
