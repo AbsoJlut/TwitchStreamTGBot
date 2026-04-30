@@ -70,9 +70,12 @@ STREAMER = config['STREAMER']
 ALWAYS_SHOW_HOURS = config.get('ALWAYS_SHOW_HOURS', False)
 SOCIAL_LINKS = config.get('SOCIAL_LINKS', {})
 STREAM_LINKS = config.get('STREAM_LINKS', {})
+DELETE_STREAM_MESSAGE_AFTER_END = config.get('DELETE_STREAM_MESSAGE_AFTER_END', False)
+DELETE_STREAM_MESSAGE_DELAY_SECONDS = config.get('DELETE_STREAM_MESSAGE_DELAY_SECONDS', 600)
 
 START_TIME = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 message_id = None
+delete_task = None
 is_streaming = False
 last_stream_data = None
 
@@ -308,9 +311,22 @@ async def send_or_update_message(bot: Bot, stream_info: dict, is_ended: bool = F
                     raise
                 await asyncio.sleep(1.5 + random.random())
 
+async def delete_stream_message_later(bot: Bot, delay: int):
+    global message_id
+    try:
+        await asyncio.sleep(delay)
+        if message_id:
+            await bot.delete_message(chat_id=CHANNEL_ID, message_id=message_id)
+            logger.info(f"Сообщение о стриме удалено (ID {message_id})")
+            message_id = None
+    except asyncio.CancelledError:
+        logger.info("Удаление сообщения отменено (стрим возобновился)")
+        raise
+    except Exception as e:
+        logger.error(f"Ошибка при удалении сообщения: {e}")
 
 async def check_stream():
-    global is_streaming, message_id, last_stream_data, last_sent
+    global is_streaming, message_id, last_stream_data, last_sent, delete_task
 
     request = HTTPXRequest(
         connect_timeout=10.0,
@@ -327,16 +343,41 @@ async def check_stream():
                 twitch = await get_twitch_client()
 
             stream_info = await get_stream_info(twitch)
+
             if stream_info and not is_streaming:
                 is_streaming = True
+
+                if delete_task and not delete_task.done():
+                    delete_task.cancel()
+                delete_task = None
+
                 await send_or_update_message(bot, stream_info, is_ended=False)
+
             elif not stream_info and is_streaming:
                 is_streaming = False
+
                 if last_stream_data:
                     await send_or_update_message(bot, last_stream_data, is_ended=True)
-                message_id = None
+
+                    if DELETE_STREAM_MESSAGE_AFTER_END:
+                        if delete_task and not delete_task.done():
+                            delete_task.cancel()
+
+                        delete_task = asyncio.create_task(
+                            delete_stream_message_later(
+                                bot,
+                                DELETE_STREAM_MESSAGE_DELAY_SECONDS
+                            )
+                        )
+
                 last_stream_data = None
-                last_sent = {'media_url': None, 'caption_html': None, 'reply_markup_key': None, 'is_ended': None}
+                last_sent = {
+                    'media_url': None,
+                    'caption_html': None,
+                    'reply_markup_key': None,
+                    'is_ended': None,
+                }
+
             elif stream_info and is_streaming:
                 await send_or_update_message(bot, stream_info, is_ended=False)
 
