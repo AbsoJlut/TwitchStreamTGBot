@@ -1,0 +1,44 @@
+# Secrets / local config
+config.json
+.env
+*.env
+config1.json
+
+# Logs
+log.txt
+error.txt
+*.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+error.txt
+log.txt
+restart_log.txt
+config.json
+
+# Docker local overrides
+.dockerignore.local
+
