@@ -146,18 +146,6 @@ config.json
 
 ---
 
-## 🔐 ВАЖНО
-
-❗ **НЕ загружай `config.json` в GitHub**
-
-Добавь в `.gitignore`:
-
-```bash
-config.json
-```
-
----
-
 ## ▶️ Запуск
 
 ### Обычный запуск
