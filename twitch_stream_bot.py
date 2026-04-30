@@ -8,6 +8,7 @@ from twitchAPI.twitch import Twitch
 from telegram import Bot, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.error import BadRequest
 from tg_group_dlc import start_group_dlc  # DLC: фоновый модуль приветствий и команд
+from tg_to_discord_bridge import register_tg_to_discord_bridge
 from tg_fun_dlc import start_fun_dlc
 from html import escape as h
 import random
@@ -366,9 +367,13 @@ async def main():
     # 1) запускаем DLC для группы и получаем его Application
     dlc_app = None
     try:
-        dlc_app = await start_group_dlc()  # <-- ЖДЁМ, чтобы получить app
+        dlc_app = await start_group_dlc()
         if dlc_app:
             logger.info("Group DLC запущен")
+    
+            register_tg_to_discord_bridge(dlc_app)
+            logger.info("Telegram → Discord bridge подключён")
+    
     except Exception as e:
         logger.exception(f"DLC не запустился: {e}")
 

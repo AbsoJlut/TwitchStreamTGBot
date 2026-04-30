@@ -519,7 +519,7 @@ async def start_group_dlc() -> Application | None:
     await app.initialize()
     await app.start()
     await app.updater.start_polling(
-        allowed_updates=["message", "chat_member", "callback_query"],
+        allowed_updates=["message", "channel_post", "chat_member", "callback_query"],
         poll_interval=0.0,
         timeout=50.0,
         drop_pending_updates=True
