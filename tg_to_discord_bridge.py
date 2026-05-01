@@ -1,6 +1,7 @@
 # tg_to_discord_bridge.py
 import json
 import aiohttp
+import re
 from telegram import Update
 from telegram.ext import Application, MessageHandler, ContextTypes, filters
 
@@ -8,6 +9,20 @@ from telegram.ext import Application, MessageHandler, ContextTypes, filters
 def load_config():
     with open("config.json", "r", encoding="utf-8") as f:
         return json.load(f)
+
+def remove_emoji(text: str) -> str:
+    emoji_pattern = re.compile(
+        "["
+        "\U0001F600-\U0001F64F"
+        "\U0001F300-\U0001F5FF"
+        "\U0001F680-\U0001F6FF"
+        "\U0001F1E0-\U0001F1FF"
+        "\U00002700-\U000027BF"
+        "\U000024C2-\U0001F251"
+        "]+",
+        flags=re.UNICODE
+    )
+    return emoji_pattern.sub("", text).strip()
 
 
 async def tg_to_discord(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -33,12 +48,13 @@ async def tg_to_discord(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     text = msg.text or msg.caption or ""
+    text = remove_emoji(text)
 
     # ❗ Фильтр: игнорируем мусор (эмодзи, стикеры и т.д.)
-    if not text.strip() and not msg.photo:
+    if not text.strip() and not msg.photo and not msg.video_note:
         return
 
-    if text.strip() and not msg.photo:
+    if text.strip() and not msg.photo and not msg.video_note:
         cleaned = text.strip()
         has_letters_or_digits = any(ch.isalnum() for ch in cleaned)
 
@@ -56,15 +72,56 @@ async def tg_to_discord(update: Update, context: ContextTypes.DEFAULT_TYPE):
     post_url = None
     if chat.username:
         post_url = f"https://t.me/{chat.username}/{msg.message_id}"
+        
+    # 🎥 Кружок (video_note) — отправляем БЕЗ embed
+    if msg.video_note:
+        video = msg.video_note
+        tg_file = await context.bot.get_file(video.file_id)
+        video_bytes = await tg_file.download_as_bytearray()
+
+        async with aiohttp.ClientSession() as session:
+            form = aiohttp.FormData()
+
+            payload = {}
+
+            form.add_field("payload_json", json.dumps(payload, ensure_ascii=False))
+            form.add_field(
+                "file",
+                bytes(video_bytes),
+                filename="telegram_video.mp4",
+                content_type="video/mp4"
+            )
+    
+            await session.post(webhook_url, data=form)
+    
+        return
+        
+    chat_photo_url = None
+
+    try:
+        chat_info = await context.bot.get_chat(chat.id)
+        if chat_info.photo:
+            file = await context.bot.get_file(chat_info.photo.small_file_id)
+            chat_photo_url = file.file_path
+    except Exception:
+        pass
 
     embed = {
         "title": "📢 Новость из Telegram",
         "description": text if text.strip() else " ",
         "color": embed_color,
-        "footer": {
-            "text": "Пост из Telegram канала @kotya_lisichkina"
-        }
     }
+
+    footer_text = cfg.get("DISCORD_FOOTER_TEXT")
+
+    if footer_text:
+        embed["footer"] = {
+            "text": footer_text
+        }
+
+        if chat_photo_url:
+            embed["footer"]["icon_url"] = chat_photo_url
+
 
     if post_url:
         embed["url"] = post_url
